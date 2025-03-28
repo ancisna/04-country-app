@@ -14,22 +14,28 @@ import { firstValueFrom } from 'rxjs';
 export class ByCapitalPageComponent { 
   // inyectamos nuestro servicio para poder usarlo en lugar de un constructor
   countryService = inject(CountryService); 
-  // resource: función que se configura mediante un objeto
-
+ 
+  // signal crea una señal que almacena una consulta hecha por el usuario
+  //  se actualiza dinámicamente cuando el usuario escriba en el campo de búsqueda.
   query = signal('');
 
+  // Resource sustituye a Observable y suscribe()
+   // resource: permite manejar datos asíncronos de forma reactiva
   countryResource = resource({
+    // request: datos que necesita para funcionar, observa query()
+    // Cuando query cambie el recurso se actualizará automáticamente
     request: () => ({ query: this.query() }),
+    // loader: cargará los datos usa query para hacer la petición al servicio
     loader: async({ request }) => {
-      if (!request.query) return [];
-
+      if (!request.query) return []; // si query está vacío
+      // Convierte el Observable en una Promesa para poder usar await
       return await firstValueFrom( 
         this.countryService.searchByCapital(request.query)
       )
     },
   });
 
-  
+
 
   /****** Forma antigua ***************/
 
