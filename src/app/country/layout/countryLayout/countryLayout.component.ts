@@ -7,5 +7,6 @@ import { TopMenuComponent } from '../../components/top-menu/top-menu.component';
   imports: [RouterOutlet, TopMenuComponent],
   templateUrl: './countryLayout.component.html',
 })
-// Es un componente que se utiliza para dar estilo a todas las páginas hijas
+// Es un componente que se utiliza para dar estilo a 
+//todas las páginas hijas y es donde importamos el RouterOutlet
 export class CountryLayoutComponent { }

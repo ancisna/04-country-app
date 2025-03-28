@@ -6,6 +6,6 @@ import { Component, output, input} from '@angular/core';
   templateUrl: './search-input.component.html',
 })
 export class SearchInputComponent { 
-  placeholder = input('Buscar');
-  value = output<string>();
+  placeholder = input('Buscar');  
+  value = output<string>(); // no se recomienda poner on para los eventos (onValue) por buenas practicas
 }

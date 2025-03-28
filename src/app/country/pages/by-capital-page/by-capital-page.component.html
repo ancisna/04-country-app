@@ -1,4 +1,7 @@
 <!-- country.search-input -->
-<country-search-input placeholder="Buscar por capital"/>
+ <!-- Cuando se escribe se captura el evento (value) emitido por el componente hijo 
+    y ejecuta el método onSearch($event) del componente padre ByCapitalPageComponent.-->
+<country-search-input placeholder="Buscar por capital"
+(value)="onSearch($event)"/> 
 <!-- country-list-->
-<country-list/>
+<country-list [countries] = "countries()"/>
