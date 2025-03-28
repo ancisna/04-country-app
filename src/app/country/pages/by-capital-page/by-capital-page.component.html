@@ -1,7 +1,14 @@
 <!-- country.search-input -->
  <!-- Cuando se escribe se captura el evento (value) emitido por el componente hijo 
     y ejecuta el método onSearch($event) del componente padre ByCapitalPageComponent.-->
+<!-- <country-search-input placeholder="Buscar por capital"
+(value)="onSearch($event)"/>  -->
 <country-search-input placeholder="Buscar por capital"
-(value)="onSearch($event)"/> 
+(value)="query.set($event)"/> 
+
 <!-- country-list-->
-<country-list [countries] = "countries()"/>
+ @if (countryResource.error()) {
+    <h3> {{ countryResource.error()}} </h3>
+ }@if (countryResource.hasValue()) {
+    <country-list [countries] = "countryResource.value()!"/>
+ }
