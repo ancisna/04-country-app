@@ -1,10 +1,12 @@
 import { Component, inject, resource, signal } from '@angular/core'; // permite injectar dependencias signal permite el estado reactivo sin RxJS o BehaviorSubject
+import { rxResource } from '@angular/core/rxjs-interop';
+import { firstValueFrom, of } from 'rxjs';
+
 import { SearchInputComponent } from '../../components/search-input/search-input.component';
 import { CountryListComponent } from '../../components/country-list/country-list.component';
 import { CountryService } from '../../services/country.service'; // Servicio
 import { Country } from '../../interfaces/country.interface';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { firstValueFrom } from 'rxjs';
+
 
 @Component({
   selector: 'app-by-capital-page',
@@ -19,6 +21,25 @@ export class ByCapitalPageComponent {
   //  se actualiza dinámicamente cuando el usuario escriba en el campo de búsqueda.
   query = signal('');
 
+  /****** rxResource no trabaja con promesas, trabaja con Observables
+   * **** es muy similar a la función firstValueFrom que se usa en el codigo comentado ***************/
+  countryResource = rxResource({
+    // request: datos que necesita para funcionar, observa query()
+    // Cuando query cambie el recurso se actualizará automáticamente
+    request: () => ({ query: this.query() }),
+    // loader: cargará los datos usa query para hacer la petición al servicio
+    loader: ({ request }) => {
+      if (!request.query) return of([]); // si query está vacío
+
+      return this.countryService.searchByCapital(request.query);
+    },
+  });
+
+
+  /****** Resorce manda llamar a la funcion firstValueFrom que es de rxjs 
+   ****** que transforma el valor del observable en una promesa porque el resource
+   ****** trabaja con promesas ***************/
+  /*
   // Resource sustituye a Observable y suscribe()
    // resource: permite manejar datos asíncronos de forma reactiva
   countryResource = resource({
@@ -35,7 +56,7 @@ export class ByCapitalPageComponent {
     },
   });
 
-
+*/
 
   /****** Forma antigua ***************/
 
@@ -68,9 +89,5 @@ export class ByCapitalPageComponent {
       });
     }
   */
-
-
-
-
 }
 

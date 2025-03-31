@@ -6,12 +6,14 @@ export class CountryMapper{
     static mapRESTCountryItemToCountry(item: RESTCountry): Country {
 
         return {
+            // Capital
             cca2 : item.cca2,
             flag : item.flag,
             flagSvg : item.flags.svg,
             name: item.translations['spa'].common ?? 'No Spanish name',
             capital: item.capital.join(','),
             population: item.population,
+
         };
     }
 
