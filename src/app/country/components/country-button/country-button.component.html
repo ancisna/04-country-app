@@ -1,0 +1,12 @@
+<div class="flex-col">
+  @for ( region of regions(); track region ) {
+  <button
+    class="btn mr-2 btn-outline w-[100px]"
+    (click)="sendRegionToByRegion(region)"
+    [class.btn-primary]="selectedRegion() === region"
+    [class.btn-primary]="initialValue() === region"
+  >
+    {{ region }}
+  </button>
+  }
+</div>

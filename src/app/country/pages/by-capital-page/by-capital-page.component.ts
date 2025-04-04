@@ -6,20 +6,24 @@ import { SearchInputComponent } from '../../components/search-input/search-input
 import { CountryListComponent } from '../../components/country-list/country-list.component';
 import { CountryService } from '../../services/country.service'; // Servicio
 import { Country } from '../../interfaces/country.interface';
-
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-by-capital-page',
   imports: [SearchInputComponent, CountryListComponent],
   templateUrl: './by-capital-page.component.html',
 })
-export class ByCapitalPageComponent { 
+export class ByCapitalPageComponent {
   // inyectamos nuestro servicio para poder usarlo en lugar de un constructor
-  countryService = inject(CountryService); 
- 
-  // signal crea una señal que almacena una consulta hecha por el usuario
+  countryService = inject(CountryService);
+
+  activatedRoute = inject(ActivatedRoute); // Obtiene la info de la ruta activa
+  router = inject(Router);
+  queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? ''; //snapshot no es reactivo
+
+  // señal que almacena una consulta hecha por el usuario
   //  se actualiza dinámicamente cuando el usuario escriba en el campo de búsqueda.
-  query = signal('');
+  query = signal(this.queryParam);
 
   /****** rxResource no trabaja con promesas, trabaja con Observables
    * **** es muy similar a la función firstValueFrom que se usa en el codigo comentado ***************/
@@ -29,14 +33,19 @@ export class ByCapitalPageComponent {
     request: () => ({ query: this.query() }),
     // loader: cargará los datos usa query para hacer la petición al servicio
     loader: ({ request }) => {
+      // ruta y parametros opcionales
+      this.router.navigate(['/country/by-capital'], {
+        queryParams: {
+          query: request.query,
+        },
+      });
       if (!request.query) return of([]); // si query está vacío
 
       return this.countryService.searchByCapital(request.query);
     },
   });
 
-
-  /****** Resorce manda llamar a la funcion firstValueFrom que es de rxjs 
+  /****** Resorce manda llamar a la funcion firstValueFrom que es de rxjs
    ****** que transforma el valor del observable en una promesa porque el resource
    ****** trabaja con promesas ***************/
   /*
@@ -90,4 +99,3 @@ export class ByCapitalPageComponent {
     }
   */
 }
-

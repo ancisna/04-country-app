@@ -9,6 +9,6 @@ import { Component, inject } from '@angular/core';
 export class NotFoundComponent {
   location = inject(Location);
   goBack() {
-    this.location.back();
+    this.location.back(); // se mueve en el historial hacia atrás
   }
 }
