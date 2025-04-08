@@ -1,4 +1,10 @@
-import { Component, inject, resource, signal } from '@angular/core'; // permite injectar dependencias signal permite el estado reactivo sin RxJS o BehaviorSubject
+import {
+  Component,
+  inject,
+  linkedSignal,
+  resource,
+  signal,
+} from '@angular/core'; // permite injectar dependencias signal permite el estado reactivo sin RxJS o BehaviorSubject
 import { rxResource } from '@angular/core/rxjs-interop';
 import { firstValueFrom, of } from 'rxjs';
 
@@ -18,12 +24,12 @@ export class ByCapitalPageComponent {
   countryService = inject(CountryService);
 
   activatedRoute = inject(ActivatedRoute); // Obtiene la info de la ruta activa
-  router = inject(Router);
+  router = inject(Router); // permite cambiar el query parametros de la url
   queryParam = this.activatedRoute.snapshot.queryParamMap.get('query') ?? ''; //snapshot no es reactivo
 
   // señal que almacena una consulta hecha por el usuario
   //  se actualiza dinámicamente cuando el usuario escriba en el campo de búsqueda.
-  query = signal(this.queryParam);
+  query = linkedSignal(() => this.queryParam);
 
   /****** rxResource no trabaja con promesas, trabaja con Observables
    * **** es muy similar a la función firstValueFrom que se usa en el codigo comentado ***************/
@@ -33,6 +39,7 @@ export class ByCapitalPageComponent {
     request: () => ({ query: this.query() }),
     // loader: cargará los datos usa query para hacer la petición al servicio
     loader: ({ request }) => {
+      console.log(request.query);
       // ruta y parametros opcionales
       this.router.navigate(['/country/by-capital'], {
         queryParams: {

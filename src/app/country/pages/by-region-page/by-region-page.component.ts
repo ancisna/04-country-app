@@ -1,4 +1,4 @@
-import { Component, signal, inject, effect } from '@angular/core';
+import { Component, signal, inject, linkedSignal } from '@angular/core';
 import { CountryListComponent } from '../../components/country-list/country-list.component';
 import { CountryButtonComponent } from '../../components/country-button/country-button.component';
 import { Region } from '../../models/region.model';
@@ -7,18 +7,19 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 
-function validateQueryPram(queryParam: string) {
-  queryParam.toLocaleLowerCase();
+function validateQueryPram(queryParam: string): string {
+  queryParam.toLowerCase();
 
   const validRegions: Record<string, string> = {
     africa: 'Africa',
-    america: 'Americas',
+    americas: 'Americas',
     asia: 'Asia',
     eruope: 'Europe',
     oceania: 'Oceania',
-    antartic: 'Antarctic',
+    antarctic: 'Antarctic',
   };
-  return validRegions[queryParam] ?? 'Americas';
+  console.log('pasó por validate', queryParam);
+  return validRegions[queryParam] ?? 'Americas'; // si no hay parametro valido devuelve 'Americas'
 }
 @Component({
   selector: 'app-by-region-page',
@@ -29,6 +30,7 @@ export class ByRegionPageComponent {
   countryService = inject(CountryService);
   activateRoute = inject(ActivatedRoute);
   router = inject(Router);
+
   queryParam = this.activateRoute.snapshot.queryParamMap.get('query') ?? '';
 
   // 1 - Definimos regions en el padre y en en el .html del padre usaremos
@@ -45,17 +47,24 @@ export class ByRegionPageComponent {
     'Antarctic',
   ];
 
-  query = signal(this.queryParam);
+  query = linkedSignal<string>(() => validateQueryPram(this.queryParam));
 
-  sendRegionEvent(region: string | null) {
+  sendRegionEvent(region: string) {
+    console.log('region:', region);
+    console.log('a', this.query); // region pero en funcion
+    console.log('b', this.queryParam); //anterior
     if (region) {
       this.query.set(region);
     }
+    validateQueryPram(this.queryParam);
   }
+
   countryResource = rxResource({
     request: () => ({ query: this.query() }),
     loader: ({ request }) => {
-      console.log(this.query);
+      console.log('1', this.query);
+      console.log('2', this.queryParam);
+      console.log('3', request.query);
       this.router.navigate(['/country/by-region'], {
         queryParams: {
           query: request.query,

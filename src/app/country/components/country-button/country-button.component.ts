@@ -1,4 +1,4 @@
-import { Component, signal, input, output } from '@angular/core';
+import { Component, linkedSignal, signal, input, output } from '@angular/core';
 import { Region } from '../../models/region.model';
 
 @Component({
@@ -9,12 +9,16 @@ import { Region } from '../../models/region.model';
 export class CountryButtonComponent {
   regions = input.required<Region[]>(); // Recibe las regiones del padre
   initialValue = input<string>();
-  selectedRegion = signal<string | null>(null); //Señal donde guardamos el valor del botón clicado
+  selectedRegion = linkedSignal<string>(() => this.initialValue() ?? ''); //Señal donde guardamos el valor del botón clicado
 
-  sendRegionEvent = output<string | null>(); // evento personalizado Emite una referencia
+  sendRegionEvent = output<string>(); // evento personalizado Emite una referencia
 
-  sendRegionToByRegion(region: string | null) {
-    this.selectedRegion.set(region);
-    this.sendRegionEvent.emit(region);
+  sendRegionToByRegion(region: string) {
+    // this.selectedRegion.set(region);
+    console.log('selectedRegion:', this.selectedRegion());
+    console.log('initialValue', this.initialValue());
+    console.log('region', region);
+
+    this.sendRegionEvent.emit(this.selectedRegion());
   }
 }
